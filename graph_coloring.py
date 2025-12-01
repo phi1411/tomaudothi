@@ -1,5 +1,10 @@
+# ==================================================================
+# THỰC HÀNH TRÍ TUỆ NHÂN TẠO – BÀI TOÁN TÔ MÀU ĐỒ THỊ
+# Thuật toán: Welsh–Powell (tô màu theo bậc giảm dần)
+# Tác giả: Nguyễn Ngọc Phi – CNTT – HUFI
+# ==================================================================
 
-# Hàm đọc ma trận kề từ file txt
+# --- HÀM ĐỌC MA TRẬN KỀ TỪ FILE TXT ---
 def read_adj_matrix(path):
     G = []
     with open(path, "r") as f:
@@ -8,23 +13,25 @@ def read_adj_matrix(path):
             G.append(row)
     return G
 
-# Thuật toán tô màu đồ thị theo phương pháp chọn bậc cao nhất
+
+# --- THUẬT TOÁN TÔ MÀU ĐỒ THỊ WELSH–POWELL ---
 def color_graph(G, node_names=None):
     n = len(G)
 
-    # Nếu không cung cấp tên thì tự gán A, B, C,...
+    # Nếu không có tên đỉnh → tự sinh A, B, C,...
     if node_names is None:
         node_names = [chr(65 + i) for i in range(n)]
 
+    # Ánh xạ tên đỉnh → vị trí trong ma trận
     index = {node_names[i]: i for i in range(n)}
 
     # Tính bậc từng đỉnh
     degree = [sum(G[i]) for i in range(n)]
 
-    # Màu có thể dùng
+    # Mỗi đỉnh ban đầu có 4 màu khả dụng
     color_dict = {node_names[i]: ["Blue", "Red", "Yellow", "Green"] for i in range(n)}
 
-    # Sắp xếp theo bậc giảm dần
+    # Sắp xếp đỉnh theo bậc giảm dần
     sorted_nodes = []
     chosen = []
     for _ in range(n):
@@ -37,27 +44,73 @@ def color_graph(G, node_names=None):
         chosen.append(pos)
         sorted_nodes.append(node_names[pos])
 
-    # Tô màu
+    # --- TIẾN HÀNH TÔ MÀU ---
     solution = {}
+
     for node in sorted_nodes:
         available_colors = color_dict[node]
-        chosen_color = available_colors[0]
-        solution[node] = chosen_color
+        chosen_color = available_colors[0]     # lấy màu đầu tiên hợp lệ
+        solution[node] = chosen_color          # lưu kết quả
 
-        # Cập nhật các đỉnh kề
+        # Cập nhật màu cho các đỉnh kề
         for j in range(n):
-            if G[index[node]][j] == 1:
+            if G[index[node]][j] == 1:         # nếu đỉnh j kề với node
                 neigh_name = node_names[j]
                 if chosen_color in color_dict[neigh_name]:
                     color_dict[neigh_name].remove(chosen_color)
 
     return solution
 
-# ------------------ DEMO CHẠY -------------------
+
+# --- HÀM VẼ ĐỒ THỊ (SỬ DỤNG NETWORKX) ---
+import networkx as nx
+import matplotlib.pyplot as plt
+
+def draw_graph(G, solution, node_names):
+    graph = nx.Graph()
+
+    # Thêm đỉnh
+    for node in node_names:
+        graph.add_node(node)
+
+    # Thêm cạnh dựa vào ma trận kề
+    n = len(G)
+    for i in range(n):
+        for j in range(i+1, n):
+            if G[i][j] == 1:
+                graph.add_edge(node_names[i], node_names[j])
+
+    # Lấy màu đã tô
+    node_colors = [solution[node] for node in node_names]
+
+    # Vẽ đồ thị
+    plt.figure(figsize=(7, 7))
+    nx.draw(
+        graph,
+        with_labels=True,
+        node_color=node_colors,
+        node_size=1500,
+        font_size=16,
+        font_weight='bold'
+    )
+    plt.title("Đồ thị sau khi tô màu (Thuật toán Welsh–Powell)")
+    plt.show()
+
+
+# --- CHẠY TRỰC TIẾP ---
 if __name__ == "__main__":
+    # Đọc ma trận từ file
     matrix = read_adj_matrix("matrix.txt")
-    result = color_graph(matrix)
+
+    # Tạo tên đỉnh A, B, C...
+    node_names = [chr(65+i) for i in range(len(matrix))]
+
+    # Tô màu
+    result = color_graph(matrix, node_names)
 
     print("===== KẾT QUẢ TÔ MÀU =====")
     for node, color in sorted(result.items()):
-        print(f"Đỉnh {node} → {color}")
+        print(f"{node} → {color}")
+
+    # Vẽ đồ thị
+    draw_graph(matrix, result, node_names)
