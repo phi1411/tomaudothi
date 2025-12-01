@@ -1,8 +1,3 @@
-# ==================================================================
-# THỰC HÀNH TRÍ TUỆ NHÂN TẠO – BÀI TOÁN TÔ MÀU ĐỒ THỊ
-# Thuật toán: Welsh–Powell (tô màu theo bậc giảm dần)
-# Tác giả: Nguyễn Ngọc Phi – CNTT – HUFI
-# ==================================================================
 
 # --- HÀM ĐỌC MA TRẬN KỀ TỪ FILE TXT ---
 def read_adj_matrix(path):
