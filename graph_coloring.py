@@ -1,7 +1,3 @@
-# ==================================================================
-# THỰC HÀNH TRÍ TUỆ NHÂN TẠO – BÀI TOÁN TÔ MÀU ĐỒ THỊ
-# Tác giả: Nguyễn Ngọc Phi – Khoa CNTT – HUFI
-# ==================================================================
 
 # Hàm đọc ma trận kề từ file txt
 def read_adj_matrix(path):
